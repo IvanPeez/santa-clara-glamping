@@ -1,14 +1,13 @@
 ---
-import { Picture } from 'astro:assets';
+import ArtPicture from './ArtPicture.astro';
 import { footer, glampings, site } from '../data/site';
-import { photo } from '../data/images';
 const year = new Date().getFullYear();
 ---
 
 <footer class="footer" id="contacto">
   <div class="footer__cta" data-header-theme="light">
     <figure class="footer__media media">
-      <Picture {...photo} src={footer.image} alt={footer.alt} sizes="100vw" data-parallax />
+      <ArtPicture src={footer.image} mobile={footer.imageMobile} alt={footer.alt} data-parallax />
     </figure>
     <div class="footer__cta-content container">
       <h2 class="heading-xl" data-animate-text set:html={footer.title} />

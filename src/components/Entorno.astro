@@ -1,7 +1,6 @@
 ---
-import { Picture } from 'astro:assets';
+import ArtPicture from './ArtPicture.astro';
 import { entorno } from '../data/site';
-import { photo } from '../data/images';
 const count = entorno.items.length;
 ---
 
@@ -21,7 +20,7 @@ const count = entorno.items.length;
       entorno.items.map((item) => (
         <div class="entorno__item" data-entorno-item>
           <figure class="entorno__media media" data-entorno-img>
-            <Picture {...photo} src={item.image} alt={item.alt} sizes="100vw" />
+            <ArtPicture src={item.image} mobile={item.imageMobile} alt={item.alt} />
           </figure>
           <div class="entorno__text" data-entorno-text>
             <h3 class="heading-m">{item.title}</h3>

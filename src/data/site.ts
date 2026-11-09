@@ -3,10 +3,11 @@ import heroVideo from '../assets/hero.mp4';
 import heroVideo720 from '../assets/hero-720.mp4';
 import heroPoster from '../assets/hero-poster.jpg';
 
-// Todas las fotos de src/assets/img, por nombre de archivo (glamping-1, entorno-2…)
+// Todas las fotos de src/assets/img, por nombre de archivo (glamping-1, entorno-2…).
+// Las versiones verticales para celular terminan en " movil" y quedan como "entorno-1-movil".
 const img: Record<string, ImageMetadata> = Object.fromEntries(
   Object.entries(import.meta.glob<{ default: ImageMetadata }>('../assets/img/*.jpg', { eager: true })).map(
-    ([path, mod]) => [path.split('/').pop()!.replace('.jpg', ''), mod.default]
+    ([path, mod]) => [path.split('/').pop()!.replace('.jpg', '').replace(' movil', '-movil'), mod.default]
   )
 );
 
@@ -118,18 +119,21 @@ export const entorno = {
       title: 'Bosque de niebla',
       text: 'La nube baja por la tarde y lo cubre todo. Al amanecer se levanta despacio y deja ver la montaña.',
       image: img['entorno-1'],
+      imageMobile: img['entorno-1-movil'],
       alt: 'Mujer de espaldas mirando los árboles envueltos en niebla',
     },
     {
       title: 'A veinte minutos de Cali',
       text: 'Por la vía a La Elvira, en el km 18. Lo bastante cerca para venir hoy, lo bastante lejos para olvidar la ciudad.',
       image: img['entorno-2'],
+      imageMobile: img['entorno-2-movil'],
       alt: 'Jardín verde con pinos y senderos de piedra',
     },
     {
       title: 'Aves y flores',
       text: 'Colibríes, hortensias y un coro de pájaros que se encarga de despertarte.',
       image: img['entorno-3'],
+      imageMobile: img['entorno-3-movil'],
       alt: 'Vista desde el ventanal hacia el jacuzzi y el bosque con niebla',
     },
   ],
@@ -155,6 +159,7 @@ export const rituales = {
 export const footer = {
   title: 'Tu noche entre <em>la niebla</em> te espera',
   image: img['footer'],
+  imageMobile: img['footer-movil'],
   alt: 'Hombre en la piscina frente a la cabaña tipo A al atardecer',
   explore: nav.filter((n) => n.href !== '#inicio' && n.href !== '#contacto'),
 };
