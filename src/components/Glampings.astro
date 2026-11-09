@@ -1,0 +1,130 @@
+---
+import { Picture } from 'astro:assets';
+import { glampings, glampingsIntro, site } from '../data/site';
+import { photo } from '../data/images';
+---
+
+<section class="glampings module" id="glampings">
+  <div class="glampings__head container">
+    <h2 class="heading-l" set:html={glampingsIntro.title} />
+    <p class="body-text">{glampingsIntro.text}</p>
+  </div>
+
+  <div class="glampings__slider swiper" data-glampings>
+    <div class="swiper-wrapper" data-stagger>
+      <div class="swiper-slide glampings__intro-slide">
+        <h2 class="heading-l" set:html={glampingsIntro.title} />
+        <p class="body-text">{glampingsIntro.text}</p>
+      </div>
+      {
+        glampings.map((g) => (
+          <article class="swiper-slide glamping-card">
+            <a href={site.whatsappUrl} data-booking-open data-glamping={g.id} aria-label={`Reservar ${g.name}`}>
+              <figure class="glamping-card__media media">
+                <Picture {...photo} src={g.image} alt={g.alt} sizes="(min-width: 900px) 30vw, 78vw" />
+              </figure>
+              <h3 class="heading-m glamping-card__name">{g.name}</h3>
+              <p class="label muted">{g.line}</p>
+              <p class="body-text glamping-card__phrase">{g.phrase}</p>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="glampings__nav container">
+    <button class="label link-line" type="button" data-glampings-prev>Anterior</button>
+    <button class="label link-line" type="button" data-glampings-next>Siguiente</button>
+  </div>
+</section>
+
+<style>
+  .glampings__head {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 48px;
+    max-width: 640px;
+  }
+
+  .glampings__intro-slide {
+    display: none;
+  }
+
+  /* Sin Swiper iniciado: fila con scroll horizontal (el paso 5 lo convierte en slider) */
+  .glampings__slider:not(.swiper-initialized) .swiper-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .glamping-card {
+    flex-shrink: 0;
+    width: 78vw;
+    scroll-snap-align: start;
+  }
+
+  .glamping-card a {
+    display: grid;
+    gap: 10px;
+  }
+
+  .glamping-card__media {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 12px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .glamping-card__media img {
+      transition: transform 0.8s var(--ease);
+    }
+
+    .glamping-card a:hover img {
+      transform: scale(1.03);
+    }
+  }
+
+  .glamping-card__phrase {
+    max-width: 34ch;
+  }
+
+  .glampings__nav {
+    display: flex;
+    gap: 32px;
+    margin-top: 40px;
+  }
+
+  .glampings__nav button {
+    min-height: 44px;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  .glampings__nav .swiper-button-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  @media (min-width: 900px) {
+    .glampings__head {
+      display: none;
+    }
+
+    .glampings__intro-slide {
+      display: grid;
+      align-content: center;
+      gap: 22px;
+      flex-shrink: 0;
+      width: 40vw;
+      padding-right: 6vw;
+      scroll-snap-align: start;
+    }
+
+    .glamping-card {
+      width: 30vw;
+    }
+  }
+</style>

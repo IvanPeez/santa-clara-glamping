@@ -1,0 +1,170 @@
+---
+import { Picture } from 'astro:assets';
+import { footer, glampings, site } from '../data/site';
+import { photo } from '../data/images';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" id="contacto">
+  <div class="footer__cta" data-header-theme="light">
+    <figure class="footer__media media">
+      <Picture {...photo} src={footer.image} alt={footer.alt} sizes="100vw" data-parallax />
+    </figure>
+    <div class="footer__cta-content container">
+      <h2 class="heading-xl" data-animate-text set:html={footer.title} />
+      <a class="btn btn--book" href={site.whatsappUrl} data-booking-open data-animate>Reservar por WhatsApp</a>
+    </div>
+  </div>
+
+  <div class="footer__body container" data-header-theme="light">
+    <p class="footer__brand">{site.wordmark}</p>
+    <p class="body-text footer__motto">{site.motto}</p>
+
+    <div class="footer__cols">
+      <div>
+        <h3 class="label footer__title">Visítanos</h3>
+        <a class="body-text link-line" href={site.mapsUrl} target="_blank" rel="noopener">{site.address}</a>
+        <p class="body-text">Check-in: {site.checkin}<br />Check-out: {site.checkout}</p>
+      </div>
+      <div>
+        <h3 class="label footer__title">Glampings</h3>
+        <ul>
+          {glampings.map((g) => (
+            <li>
+              <a class="body-text" href={site.whatsappUrl} data-booking-open data-glamping={g.id}>{g.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="label footer__title">Explora</h3>
+        <ul>
+          {footer.explore.map((n) => (
+            <li>
+              <a class="body-text" href={n.href}>{n.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="label footer__title">Reservas</h3>
+        <ul>
+          <li><a class="body-text" href={site.whatsappUrl} target="_blank" rel="noopener">WhatsApp {site.whatsappDisplay}</a></li>
+          <li><a class="body-text" href={site.instagram.url} target="_blank" rel="noopener">Instagram</a></li>
+          <li><a class="body-text" href={site.tiktok.url} target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__legal label">
+      <span>© {year} Santa Clara Glamping S.A.S.</span>
+      <span>Km 18 · Cali · Colombia</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bosque);
+    color: var(--niebla);
+  }
+
+  .footer__cta {
+    position: relative;
+    height: 90vh;
+    min-height: 520px;
+    overflow: hidden;
+  }
+
+  .footer__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .footer__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(14 21 16 / 0.75), rgb(14 21 16 / 0.2) 60%);
+  }
+
+  .footer__cta-content {
+    position: relative;
+    display: grid;
+    align-content: end;
+    justify-items: start;
+    gap: 36px;
+    height: 100%;
+    padding-bottom: calc(var(--gutter) + 24px);
+  }
+
+  .footer__cta-content h2 {
+    max-width: 14ch;
+  }
+
+  .footer__body {
+    padding-block: 80px 32px;
+  }
+
+  .footer__brand {
+    font-family: var(--font-heading);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 300;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .footer__motto {
+    margin-top: 12px;
+    opacity: 0.7;
+  }
+
+  .footer__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-top: 64px;
+  }
+
+  .footer__cols > div {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    justify-items: start;
+  }
+
+  .footer__cols ul {
+    display: grid;
+    gap: 2px;
+  }
+
+  .footer__cols li a {
+    display: inline-block;
+    padding-block: 4px;
+  }
+
+  .footer__cols a:not(.link-line) {
+    opacity: 0.85;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .footer__cols a:hover {
+    opacity: 1;
+  }
+
+  .footer__title {
+    color: var(--helecho);
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid rgb(236 238 232 / 0.15);
+    opacity: 0.6;
+  }
+</style>

@@ -1,0 +1,576 @@
+---
+import { Picture } from 'astro:assets';
+import { glampings, nav, site } from '../data/site';
+import { photo } from '../data/images';
+
+// Las vistas previas del menú son lazy, pero en el panel oculto el navegador no las cargaría nunca:
+// main.ts las pasa a eager cuando la página ya cargó (o al abrir el menú).
+// En el menú, "Glampings" se despliega en sus tres cabañas
+const menuLinks = nav.filter((n) => n.href !== '#inicio');
+---
+
+<header class="header" data-header>
+  <div class="header__inner container">
+    <button
+      class="header__menu label"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu"
+      data-menu-open
+    >
+      <span class="header__icon" aria-hidden="true"><span></span><span></span></span>
+      <span class="header__menu-text">Menú</span>
+    </button>
+    <a class="header__logo" href="#inicio" aria-label={`${site.name}, inicio`}>{site.wordmark}</a>
+    <a class="header__book label" href={site.whatsappUrl} data-booking-open>Reservar</a>
+  </div>
+</header>
+
+<!-- Menú lateral -->
+<div class="overlay menu" id="menu" data-menu inert>
+  <div class="overlay__veil" data-menu-veil data-menu-close></div>
+
+  <div class="menu__preview" aria-hidden="true">
+    {
+      glampings.map((g, i) => (
+        <Picture
+          {...photo}
+          src={g.image}
+          alt=""
+          sizes="380px"
+          class:list={['menu__preview-img', { 'is-active': i === 0 }]}
+          data-menu-preview={g.id}
+        />
+      ))
+    }
+  </div>
+
+  <nav class="menu__panel" aria-label="Menú principal" data-menu-panel data-lenis-prevent>
+    <div class="menu__top">
+      <button class="label menu__close" type="button" data-menu-close>
+        <span class="menu__x" aria-hidden="true"></span>
+        Cerrar
+      </button>
+    </div>
+
+    <ul class="menu__list">
+      {
+        menuLinks.map((link) =>
+          link.href === '#glampings' ? (
+            <li class="menu__group" data-menu-item>
+              <a class="heading-m menu__link" href={link.href} data-menu-link>
+                {link.label}
+              </a>
+              <ul class="menu__sub">
+                {glampings.map((g) => (
+                  <li>
+                    <a
+                      class="body-text menu__sublink"
+                      href={site.whatsappUrl}
+                      data-booking-open
+                      data-glamping={g.id}
+                      data-menu-hover={g.id}
+                    >
+                      {g.name}
+                      <span class="label muted">{g.line}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li data-menu-item>
+              <a class="heading-m menu__link" href={link.href} data-menu-link>
+                {link.label}
+              </a>
+            </li>
+          )
+        )
+      }
+    </ul>
+
+    <div class="menu__bottom" data-menu-item>
+      <a class="btn btn--book" href={site.whatsappUrl} data-booking-open>Reservar</a>
+      <a class="label link-line" href={site.instagram.url} target="_blank" rel="noopener">
+        {site.instagram.handle}
+      </a>
+      <p class="body-text muted">{site.motto}</p>
+    </div>
+  </nav>
+</div>
+
+<!-- Panel de reserva: dos pasos y envío por WhatsApp -->
+<div class="overlay booking" data-booking inert>
+  <div class="overlay__veil" data-booking-veil data-booking-close></div>
+
+  <div
+    class="booking__panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="booking-title"
+    data-booking-panel
+    data-lenis-prevent
+  >
+    <div class="booking__top">
+      <p class="label" id="booking-title">Reserva</p>
+      <button class="label booking__close" type="button" data-booking-close>
+        Cerrar <span class="menu__x" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <form class="booking__form" data-booking-form novalidate>
+      <!-- Paso 1 -->
+      <section class="booking__step" data-booking-step="1">
+        <p class="label muted">Paso 1 de 2</p>
+        <h2 class="heading-m">Elige tu glamping y tus fechas</h2>
+
+        <fieldset class="booking__options">
+          <legend class="label">Glamping</legend>
+          {
+            glampings.map((g, i) => (
+              <label class="booking__option">
+                <input type="radio" name="glamping" value={g.id} checked={i === 0} />
+                <span class="booking__option-name">{g.name}</span>
+                <span class="label muted">{g.line}</span>
+              </label>
+            ))
+          }
+        </fieldset>
+
+        <div class="booking__calendar">
+          <p class="label">Llegada y salida</p>
+          <input type="text" class="visually-hidden" aria-label="Fechas de llegada y salida" data-booking-dates />
+          <p class="booking__dates body-text" data-booking-dates-text aria-live="polite">Selecciona dos fechas.</p>
+        </div>
+
+        <p class="booking__error label" data-booking-error="1" role="alert" hidden>
+          Elige la fecha de llegada y la de salida (mínimo 1 noche).
+        </p>
+
+        <button class="btn btn--solid booking__next" type="button" data-booking-next>Siguiente</button>
+      </section>
+
+      <!-- Paso 2 -->
+      <section class="booking__step" data-booking-step="2" hidden>
+        <p class="label muted">Paso 2 de 2</p>
+        <h2 class="heading-m">Tus datos</h2>
+
+        <div class="booking__summary">
+          <dl>
+            <div><dt class="label muted">Glamping</dt><dd data-summary="glamping"></dd></div>
+            <div><dt class="label muted">Llegada</dt><dd data-summary="checkin"></dd></div>
+            <div><dt class="label muted">Salida</dt><dd data-summary="checkout"></dd></div>
+          </dl>
+          <button class="label link-line" type="button" data-booking-back>Editar</button>
+        </div>
+
+        <label class="booking__field">
+          <span class="label">Nombre</span>
+          <input type="text" name="nombre" autocomplete="name" required />
+        </label>
+
+        <label class="booking__field">
+          <span class="label">Personas</span>
+          <select name="personas">
+            {[1, 2, 3, 4].map((n) => <option value={n} selected={n === 2}>{n}</option>)}
+          </select>
+        </label>
+
+        <label class="booking__field">
+          <span class="label">Notas (opcional)</span>
+          <textarea name="notas" rows="3" placeholder="¿Celebras algo? Cuéntanos."></textarea>
+        </label>
+
+        <p class="booking__error label" data-booking-error="2" role="alert" hidden>Escribe tu nombre.</p>
+
+        <button class="btn btn--book booking__submit" type="submit">Enviar por WhatsApp</button>
+        <p class="body-text muted booking__note">
+          Se abrirá WhatsApp con tu solicitud lista. Te confirmamos disponibilidad y precio por ahí.
+        </p>
+      </section>
+    </form>
+  </div>
+</div>
+
+<style>
+  /* ---------- Header ---------- */
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--niebla);
+    transition:
+      color 0.5s var(--ease),
+      transform 0.5s var(--ease);
+  }
+
+  .header.is-dark {
+    color: var(--bosque);
+  }
+
+  .header.is-hidden {
+    transform: translateY(-100%);
+  }
+
+  .header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: var(--header-h);
+  }
+
+  .header__menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    justify-self: start;
+    min-height: 44px;
+  }
+
+  .header__icon {
+    display: grid;
+    gap: 6px;
+    width: 22px;
+  }
+
+  .header__icon span {
+    height: 1px;
+    background: currentColor;
+  }
+
+  .header__logo {
+    display: inline-block;
+    padding-block: 12px;
+    font-family: var(--font-heading);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 300;
+    font-size: 19px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .header__book {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  @media (max-width: 599px) {
+    .header__menu-text {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .header__logo {
+      font-size: 15px;
+      letter-spacing: 0.18em;
+    }
+  }
+
+  /* ---------- Overlays (menú y reserva) ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    visibility: hidden;
+  }
+
+  .overlay__veil {
+    position: absolute;
+    inset: 0;
+    background: var(--velo);
+    opacity: 0;
+  }
+
+  .menu__x {
+    position: relative;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+  }
+
+  .menu__x::before,
+  .menu__x::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  .menu__x::after {
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- Menú ---------- */
+  .menu__panel {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 100%);
+    padding: 0 var(--gutter) var(--gutter);
+    background: var(--niebla);
+    color: var(--bosque);
+    overflow-y: auto;
+  }
+
+  .menu__top {
+    display: flex;
+    align-items: center;
+    height: var(--header-h);
+    flex-shrink: 0;
+  }
+
+  .menu__close,
+  .booking__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+  }
+
+  .menu__list {
+    display: grid;
+    gap: 6px;
+    margin-top: 32px;
+  }
+
+  .menu__link {
+    display: inline-block;
+    padding-block: 4px;
+    transition: color 0.3s var(--ease);
+  }
+
+  .menu__link:hover {
+    color: var(--musgo);
+  }
+
+  .menu__sub {
+    display: grid;
+    gap: 4px;
+    margin: 8px 0 14px;
+    padding-left: 18px;
+    border-left: 1px solid var(--bruma);
+  }
+
+  .menu__sublink {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding-block: 4px;
+  }
+
+  .menu__sublink:hover {
+    color: var(--musgo);
+  }
+
+  .menu__bottom {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    margin-top: auto;
+    padding-top: 40px;
+  }
+
+  .menu__preview {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .menu__preview {
+      position: absolute;
+      top: 50%;
+      left: calc(420px + (100vw - 420px) / 2);
+      display: block;
+      width: min(26vw, 380px);
+      aspect-ratio: 4 / 5;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      overflow: hidden;
+      background: var(--bruma);
+    }
+
+    .menu__preview-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.06);
+      transition:
+        opacity 0.35s var(--ease),
+        transform 0.6s var(--ease);
+    }
+
+    .menu__preview-img.is-active {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* ---------- Reserva ---------- */
+  .booking__panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(520px, 100%);
+    padding: 0 var(--gutter) var(--gutter);
+    background: var(--niebla);
+    color: var(--bosque);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .booking__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-h);
+  }
+
+  .booking__step {
+    display: grid;
+    gap: 22px;
+    padding-top: 24px;
+  }
+
+  /* `hidden` pierde frente a display: grid */
+  .booking__step[hidden] {
+    display: none;
+  }
+
+  .booking__options {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .booking__options legend {
+    margin-bottom: 10px;
+  }
+
+  .booking__option {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--bruma);
+    cursor: pointer;
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .booking__option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .booking__option-name {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 300;
+  }
+
+  .booking__option:hover {
+    border-color: var(--helecho);
+  }
+
+  .booking__option:has(input:checked) {
+    border-color: var(--bosque);
+    background: #fff;
+  }
+
+  .booking__option:has(input:focus-visible) {
+    outline: 1px solid var(--bosque);
+    outline-offset: 3px;
+  }
+
+  .booking__calendar {
+    display: grid;
+    gap: 12px;
+  }
+
+  .booking__error {
+    color: #a23b2a;
+  }
+
+  .booking__next,
+  .booking__submit {
+    width: 100%;
+  }
+
+  .booking__summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    background: #fff;
+  }
+
+  .booking__summary dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .booking__summary dl > div {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: baseline;
+  }
+
+  .booking__summary dd {
+    margin: 0;
+  }
+
+  .booking__field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .booking__field input,
+  .booking__field select,
+  .booking__field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    border: 1px solid var(--bruma);
+    border-radius: 0;
+    background: #fff;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 16px;
+  }
+
+  .booking__field textarea {
+    resize: vertical;
+  }
+
+  .booking__field input:focus,
+  .booking__field select:focus,
+  .booking__field textarea:focus {
+    outline: none;
+    border-color: var(--bosque);
+  }
+
+  .booking__note {
+    font-size: 14px;
+  }
+</style>

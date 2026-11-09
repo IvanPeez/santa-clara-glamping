@@ -1,0 +1,57 @@
+---
+import { Picture } from 'astro:assets';
+import { intro } from '../data/site';
+import { photo } from '../data/images';
+---
+
+<section class="intro container module" id="experiencia">
+  <div class="intro__main">
+    <h2 class="visually-hidden">{intro.label}</h2>
+    <p class="heading-m intro__quote" data-animate-text>{intro.quote}</p>
+    <figure class="intro__media media" data-animate-img>
+      <Picture {...photo} src={intro.image} alt={intro.alt} sizes="(min-width: 900px) 55vw, 100vw" data-parallax />
+    </figure>
+  </div>
+  <div class="intro__side">
+    <p class="body-text" data-animate>{intro.paragraph}</p>
+    <a class="label link-line" href={intro.link.href} data-animate>{intro.link.label}</a>
+  </div>
+</section>
+
+<style>
+  .intro {
+    display: grid;
+    gap: 40px;
+  }
+
+  .intro__main {
+    display: grid;
+    gap: 28px;
+  }
+
+  .intro__quote {
+    max-width: 30ch;
+  }
+
+  .intro__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .intro__side {
+    display: grid;
+    gap: 28px;
+    justify-items: start;
+    max-width: 38ch;
+  }
+
+  @media (min-width: 900px) {
+    .intro {
+      grid-template-columns: 58fr 42fr;
+      gap: clamp(48px, 6vw, 110px);
+    }
+
+    .intro__side {
+      align-self: end;
+    }
+  }
+</style>

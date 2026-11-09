@@ -1,0 +1,105 @@
+---
+import { Picture } from 'astro:assets';
+import { rituales, site } from '../data/site';
+import { photo } from '../data/images';
+---
+
+<section class="rituales container module" id="rituales" data-bg-color="#E3E7DE">
+  <div class="rituales__left">
+    <h2 class="heading-l" data-animate-text set:html={rituales.quote} />
+    <figure class="rituales__media rituales__media--a media" data-animate-img>
+      <Picture {...photo} src={rituales.imageA} alt={rituales.altA} sizes="(min-width: 900px) 36vw, 80vw" />
+    </figure>
+  </div>
+
+  <div class="rituales__right">
+    <figure class="rituales__media rituales__media--b media" data-animate-img>
+      <Picture {...photo} src={rituales.imageB} alt={rituales.altB} sizes="(min-width: 900px) 45vw, 80vw" />
+    </figure>
+    <ol class="rituales__list">
+      {
+        rituales.items.map((item, i) => (
+          <li data-animate>
+            <span class="label muted">{String(i + 1).padStart(2, '0')}</span>
+            <span class="heading-m">{item}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="body-text" data-animate>{rituales.paragraph}</p>
+    <a class="btn btn--solid" href={site.whatsappUrl} data-booking-open data-animate>{rituales.button}</a>
+  </div>
+</section>
+
+<style>
+  .rituales {
+    display: grid;
+    gap: 64px;
+  }
+
+  .rituales__left,
+  .rituales__right {
+    display: grid;
+    gap: 32px;
+    align-content: start;
+    justify-items: start;
+  }
+
+  .rituales__media {
+    width: 100%;
+  }
+
+  .rituales__media--a {
+    aspect-ratio: 4 / 5;
+  }
+
+  .rituales__media--b {
+    aspect-ratio: 4 / 3;
+  }
+
+  .rituales__list {
+    width: 100%;
+    border-top: 1px solid rgb(28 38 32 / 0.15);
+  }
+
+  .rituales__list li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    align-items: baseline;
+    padding-block: 18px;
+    border-bottom: 1px solid rgb(28 38 32 / 0.15);
+  }
+
+  .rituales__right .body-text {
+    max-width: 42ch;
+  }
+
+  /* Móvil: las fotos se desplazan a lados opuestos */
+  @media (max-width: 899px) {
+    .rituales__media--a {
+      width: 80%;
+      margin-left: calc(var(--gutter) * -1);
+    }
+
+    .rituales__media--b {
+      width: 80%;
+      justify-self: end;
+      margin-right: calc(var(--gutter) * -1);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .rituales {
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(48px, 7vw, 120px);
+    }
+
+    .rituales__left .rituales__media--a {
+      width: 80%;
+    }
+
+    .rituales__right {
+      padding-top: 18vh;
+    }
+  }
+</style>
